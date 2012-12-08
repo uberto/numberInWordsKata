@@ -1,20 +1,25 @@
 package com.gamasoft.kata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NumberWords {
 
 
     public static String transform(long number) {
 
-        Renderer tooBig = new TooBigNumber();
-        Renderer billions = new QuantityBase(tooBig, 1000000000, "billion");
-        Renderer millions = new QuantityBase(billions, 1000000, "million");
-        Renderer thousands = new QuantityBase(millions, 1000, "thousand");
-        Renderer hundreds = new Hundreds(thousands);
-        Renderer tens = new Tens(hundreds);
-        Renderer twenty = new Twenty(tens);
-        Renderer zero = new Zero(twenty);
+        List<NumberWord> list = new ArrayList<NumberWord>();
+        list.add(new Zero());
+        list.add(new Twenty());
+        list.add(new Tens());
+        list.add(new Hundreds());
+        list.add(new QuantityBase(1000, "thousand"));
+        list.add(new QuantityBase(1000000, "million"));
+        list.add(new QuantityBase(1000000000, "billion"));
 
-        return zero.transformIntoWords(number);
+        Renderer renderer = new Renderer(list);
+
+        return renderer.transformIntoWords(number);
 
     }
 
@@ -26,11 +31,7 @@ public class NumberWords {
             return prefix + main;
     }
 
-    private static class Zero extends Renderer {
-
-        public Zero(Renderer nextRenderer) {
-            super(nextRenderer);
-        }
+    private static class Zero implements NumberWord {
 
         @Override
         public String render(long number) {
@@ -43,12 +44,9 @@ public class NumberWords {
         }
     }
 
-    private static class Twenty extends Renderer {
+    private static class Twenty implements NumberWord {
         final static String[] underTwentyWords = new String[]{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
 
-        public Twenty(Renderer nextRenderer) {
-            super(nextRenderer);
-        }
 
         @Override
         public String render(long number) {
@@ -61,12 +59,9 @@ public class NumberWords {
         }
     }
 
-    private static class Tens extends Renderer {
+    private static class Tens implements NumberWord {
         final static String[] tensWords = new String[]{"ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
 
-        public Tens(Renderer nextRenderer) {
-            super(nextRenderer);
-        }
 
         @Override
         public String render(long number) {
@@ -80,12 +75,9 @@ public class NumberWords {
         }
     }
 
-    private static class Hundreds extends Renderer {
+    private static class Hundreds implements NumberWord {
         final static String hundredWord = "hundred";
 
-        public Hundreds(Renderer nextRenderer) {
-            super(nextRenderer);
-        }
 
         @Override
         public String render(long number) {
@@ -99,13 +91,12 @@ public class NumberWords {
         }
     }
 
-    private static class QuantityBase extends Renderer {
+    private static class QuantityBase implements NumberWord {
         final long base;
 
         final String baseName;
 
-        public QuantityBase(Renderer nextRenderer, long base, String baseName) {
-            super(nextRenderer);
+        public QuantityBase(long base, String baseName) {
             this.base = base;
             this.baseName = baseName;
         }
@@ -122,20 +113,5 @@ public class NumberWords {
         }
     }
 
-    private static class TooBigNumber extends Renderer {
 
-        public TooBigNumber() {
-            super(null);
-        }
-
-        @Override
-        public String render(long number) {
-            return "number too big!";
-        }
-
-        @Override
-        public boolean apply(long number) {
-            return true;
-        }
-    }
 }

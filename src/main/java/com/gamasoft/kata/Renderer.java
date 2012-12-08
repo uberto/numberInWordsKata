@@ -1,24 +1,25 @@
 package com.gamasoft.kata;
 
-public abstract class Renderer {
+import java.util.List;
 
-    abstract boolean apply(long number);
+public class Renderer {
 
-    abstract String render(long number);
+    private List<NumberWord> numberWordList;
 
-    private Renderer nextRenderer;
+    public Renderer(List<NumberWord> numberWordList) {
 
-    public Renderer(Renderer nextRenderer) {
-        this.nextRenderer = nextRenderer;
+        this.numberWordList = numberWordList;
     }
 
     String transformIntoWords(long number){
 
-        if (apply(number)){
-            return render(number);
-        } else {
-            return nextRenderer.transformIntoWords(number);
+        for (NumberWord numberWord : numberWordList) {
+            if (numberWord.apply(number)){
+                return numberWord.render(number);
+            }
         }
+        return "Number too big!";
+
 
     }
 }
