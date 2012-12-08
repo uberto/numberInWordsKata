@@ -2,34 +2,19 @@ package com.gamasoft.kata;
 
 public class NumberWords {
 
-    final static String[] underTwentyWords = new String[]{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
-    final static String[] tensWords = new String[]{"ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
-    final static String hundredWord = "hundred";
-    final static String thousandWord = "thousand";
-    final static String millionWord = "million";
 
     public static String transform(int number) {
 
-        TooBigNumber tooBig = new TooBigNumber();
-        Millions millions = new Millions(tooBig);
+        Renderer tooBig = new TooBigNumber();
+        Renderer millions = new QuantityBase(tooBig, 1000000, "million");
+        Renderer thousands = new QuantityBase(millions, 1000, "thousand");
+        Renderer hundreds = new Hundreds(thousands);
+        Renderer tens = new Tens(hundreds);
+        Renderer twenty = new Twenty(tens);
+        Renderer zero = new Zero(twenty);
 
+        return zero.transformIntoWords(number);
 
-        if (number == 0) {
-            return "";
-        } else if (number < 20) {
-            return underTwentyWords[number - 1];
-        } else if (number < 100) {
-            int tens = number / 10;
-            return tensWords[tens - 1] + prefix("-", transform(number % 10));
-        } else if (number < 2000 && (number < 1000 || number > 1099)) {
-            int hundreds = number / 100;
-            return underTwentyWords[hundreds - 1] + " " + hundredWord + prefix(" ", transform(number % 100));
-        } else if (number < 1000000) {
-            int thousands = number / 1000;
-            return transform(thousands) + " " + thousandWord + prefix(", ", transform(number % 1000));
-        } else {
-            return millions.transformIntoWords(number);
-        }
     }
 
 
@@ -40,22 +25,99 @@ public class NumberWords {
             return prefix + main;
     }
 
-    private static class Millions extends Renderer {
+    private static class Zero extends Renderer {
 
-
-        public Millions(Renderer nextRenderer) {
+        public Zero(Renderer nextRenderer) {
             super(nextRenderer);
         }
 
         @Override
         public String render(int number) {
-            int millions = number / 1000000;
-            return transform(millions) + " " + millionWord + prefix(", ", transform(number % 1000000));
+            return "";
         }
 
         @Override
         public boolean apply(int number) {
-            return number < 1000000000;
+            return number == 0;
+        }
+    }
+
+    private static class Twenty extends Renderer {
+        final static String[] underTwentyWords = new String[]{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
+
+        public Twenty(Renderer nextRenderer) {
+            super(nextRenderer);
+        }
+
+        @Override
+        public String render(int number) {
+            return underTwentyWords[number - 1];
+        }
+
+        @Override
+        public boolean apply(int number) {
+            return number < 20;
+        }
+    }
+
+    private static class Tens extends Renderer {
+        final static String[] tensWords = new String[]{"ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"};
+
+        public Tens(Renderer nextRenderer) {
+            super(nextRenderer);
+        }
+
+        @Override
+        public String render(int number) {
+            int tens = number / 10;
+            return tensWords[tens - 1] + prefix("-", transform(number % 10));
+        }
+
+        @Override
+        public boolean apply(int number) {
+            return number < 100;
+        }
+    }
+
+    private static class Hundreds extends Renderer {
+        final static String hundredWord = "hundred";
+
+        public Hundreds(Renderer nextRenderer) {
+            super(nextRenderer);
+        }
+
+        @Override
+        public String render(int number) {
+            int hundreds = number / 100;
+            return transform(hundreds) + " " + hundredWord + prefix(" ", transform(number % 100));
+        }
+
+        @Override
+        public boolean apply(int number) {
+            return number < 2000 && (number < 1000 || number > 1099);
+        }
+    }
+
+    private static class QuantityBase extends Renderer {
+        final int base;
+
+        final String baseName;
+
+        public QuantityBase(Renderer nextRenderer, int base, String baseName) {
+            super(nextRenderer);
+            this.base = base;
+            this.baseName = baseName;
+        }
+
+        @Override
+        public String render(int number) {
+            int millions = number / base;
+            return transform(millions) + " " + baseName + prefix(", ", transform(number % base));
+        }
+
+        @Override
+        public boolean apply(int number) {
+            return number < base * 1000;
         }
     }
 
