@@ -8,6 +8,7 @@ public class acceptanceTest {
 
     @Test
     public void transformBigNumbersInWords() throws Exception {
+        assertThat(transform(1234567890), is("one billion, two hundred thirty-four million, five hundred sixty-seven thousand, eight hundred ninety"));
         assertThat(transform(123456789), is("one hundred twenty-three million, four hundred fifty-six thousand, seven hundred eighty-nine"));
         assertThat(transform(987654321), is("nine hundred eighty-seven million, six hundred fifty-four thousand, three hundred twenty-one"));
         assertThat(transform(432198765), is("four hundred thirty-two million, one hundred ninety-eight thousand, seven hundred sixty-five"));

@@ -2,9 +2,9 @@ package com.gamasoft.kata;
 
 public abstract class Renderer {
 
-    abstract boolean apply(int number);
+    abstract boolean apply(long number);
 
-    abstract String render(int number);
+    abstract String render(long number);
 
     private Renderer nextRenderer;
 
@@ -12,7 +12,7 @@ public abstract class Renderer {
         this.nextRenderer = nextRenderer;
     }
 
-    String transformIntoWords(int number){
+    String transformIntoWords(long number){
 
         if (apply(number)){
             return render(number);
