@@ -34,7 +34,7 @@ public class NumberWords {
     private static class Zero implements NumberWord {
 
         @Override
-        public String render(long number) {
+        public String render(Renderer renderer, long number) {
             return "";
         }
 
@@ -49,7 +49,7 @@ public class NumberWords {
 
 
         @Override
-        public String render(long number) {
+        public String render(Renderer renderer, long number) {
             return underTwentyWords[((int) (number - 1))];
         }
 
@@ -64,9 +64,9 @@ public class NumberWords {
 
 
         @Override
-        public String render(long number) {
+        public String render(Renderer renderer, long number) {
             int tens = (int) (number / 10);
-            return tensWords[tens - 1] + prefix("-", transform(number % 10));
+            return tensWords[tens - 1] + prefix("-", renderer.transformIntoWords(number % 10));
         }
 
         @Override
@@ -80,9 +80,9 @@ public class NumberWords {
 
 
         @Override
-        public String render(long number) {
+        public String render(Renderer renderer, long number) {
             long hundreds = number / 100;
-            return transform(hundreds) + " " + hundredWord + prefix(" ", transform(number % 100));
+            return renderer.transformIntoWords(hundreds) + " " + hundredWord + prefix(" ", renderer.transformIntoWords(number % 100));
         }
 
         @Override
@@ -102,9 +102,9 @@ public class NumberWords {
         }
 
         @Override
-        public String render(long number) {
+        public String render(Renderer renderer, long number) {
             long quantity = number / base;
-            return transform(quantity) + " " + baseName + prefix(", ", transform(number % base));
+            return renderer.transformIntoWords(quantity) + " " + baseName + prefix(", ", renderer.transformIntoWords(number % base));
         }
 
         @Override

@@ -11,11 +11,11 @@ public class Renderer {
         this.numberWordList = numberWordList;
     }
 
-    String transformIntoWords(long number){
+    public String transformIntoWords(long number){
 
         for (NumberWord numberWord : numberWordList) {
             if (numberWord.apply(number)){
-                return numberWord.render(number);
+                return numberWord.render(this, number);
             }
         }
         return "Number too big!";
